@@ -1,14 +1,25 @@
+import Head from "next/head";
+
 export default function Help() {
   return (
     <div>
-      <h1>Help</h1>
-      <p>
-        Get help on the Ruby on Rails Tutorial at the
-        <a href="https://railstutorial.jp/help">Rails Tutorial help page</a>.
-        To get help on this sample app, see the
-        <a href="https://railstutorial.jp/#ebook"><em>Ruby on Rails Tutorial</em>
-        book</a>.
-      </p>
+      <Head>
+        <title>Help | Ruby on Rails Tutorial Sample App</title>
+      </Head>
+
+      <main>
+        <h1>Help</h1>
+        <p>
+          Get help on the Ruby on Rails Tutorial at the
+          <a href="https://railstutorial.jp/help">Rails Tutorial help page</a>.
+          To get help on this sample app, see the
+          <a href="https://railstutorial.jp/#ebook">
+            <em>Ruby on Rails Tutorial</em>
+            book
+          </a>
+          .
+        </p>
+      </main>
     </div>
-  )
+  );
 }
