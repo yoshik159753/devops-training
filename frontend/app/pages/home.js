@@ -1,12 +1,9 @@
-import Head from "next/head";
+import MyHead from "../components/myhead";
 
-export default function Home() {
+const Home = () => {
   return (
     <div>
-      <Head>
-        <title>Home | Ruby on Rails Tutorial Sample App</title>
-      </Head>
-
+      <MyHead title="Home" />
       <main>
         <h1>Sample App</h1>
         <p>
@@ -17,4 +14,6 @@ export default function Home() {
       </main>
     </div>
   );
-}
+};
+
+export default Home;

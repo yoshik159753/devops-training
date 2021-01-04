@@ -1,12 +1,9 @@
-import Head from "next/head";
+import MyHead from "../components/myhead";
 
-export default function Help() {
+const Help = () => {
   return (
     <div>
-      <Head>
-        <title>Help | Ruby on Rails Tutorial Sample App</title>
-      </Head>
-
+      <MyHead title="Help" />
       <main>
         <h1>Help</h1>
         <p>
@@ -22,4 +19,6 @@ export default function Help() {
       </main>
     </div>
   );
-}
+};
+
+export default Help;
