@@ -1,9 +1,8 @@
-import MyHead from "../components/myhead";
+import Layout from "../components/layout";
 
 const Help = () => {
   return (
-    <div>
-      <MyHead title="Help" />
+    <Layout pageTitle="Help">
       <main>
         <h1>Help</h1>
         <p>
@@ -17,7 +16,7 @@ const Help = () => {
           .
         </p>
       </main>
-    </div>
+    </Layout>
   );
 };
 

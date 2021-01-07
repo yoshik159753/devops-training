@@ -1,9 +1,8 @@
-import MyHead from "../components/myhead";
+import Layout from "../components/layout";
 
 const About = () => {
   return (
-    <div>
-      <MyHead title="About" />
+    <Layout pageTitle="About">
       <main>
         <h1>About</h1>
         <p>
@@ -15,7 +14,7 @@ const About = () => {
           sample application for the tutorial.
         </p>
       </main>
-    </div>
+    </Layout>
   );
 };
 
