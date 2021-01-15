@@ -11,7 +11,7 @@ const Home = () => {
           <Link href="https://railstutorial.jp/">Ruby on Rails Tutorial</Link>
           sample application.
         </h2>
-        <Link href="#">
+        <Link href="/signup">
           <a className="btn btn-lg btn-primary">Sign up now!</a>
         </Link>
       </div>
