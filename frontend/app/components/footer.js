@@ -12,10 +12,10 @@ export default function Footer() {
         <nav>
           <ul>
             <li>
-              <Link href="#">About</Link>
+              <Link href="/about">About</Link>
             </li>
             <li>
-              <Link href="#">Contact</Link>
+              <Link href="/contact">Contact</Link>
             </li>
             <li>
               <Link href="http://news.railstutorial.org/">News</Link>

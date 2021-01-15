@@ -7,16 +7,16 @@ export default function Header() {
       <header>
         <nav className="navbar navbar-expand fixed-top navbar-dark bg-dark">
           <div className="container">
-            <Link href="#">
-              <a className="navbar-brand" href="#" id="logo">
+            <Link href="/home">
+              <a className="navbar-brand" id="logo">
                 sample app
               </a>
             </Link>
             <div className="navbar-nav">
-              <Link href="#">
+              <Link href="/home">
                 <a className="nav-item nav-link">Home</a>
               </Link>
-              <Link href="#">
+              <Link href="/help">
                 <a className="nav-item nav-link">Help</a>
               </Link>
               <Link href="#">
