@@ -1,0 +1,11 @@
+@startuml data-modals
+
+object users {
+  id : uuid
+  name : string
+  email : string
+  created_at : datetime
+  updated_at : datetime
+}
+
+@enduml
