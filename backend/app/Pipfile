@@ -11,6 +11,7 @@ pytest = "*"
 
 [packages]
 psycopg2 = "*"
+jsonschema = "*"
 
 [requires]
 python_version = "3.8"
