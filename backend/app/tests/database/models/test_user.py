@@ -41,3 +41,18 @@ def test_email_should_be_present(user, email):
     """
     user.email = email
     assert not user.is_valid()
+
+
+def test_name_should_not_be_too_long(user):
+    """ User の name が50文字を超過している場合は無効であること
+    """
+    user.name = "a" * 51
+    assert not user.is_valid()
+
+
+def test_email_should_not_be_too_long(user):
+    """ User の email が255文字を超過している場合は無効であること
+    """
+    domain = "@example.com"
+    user.email = "a" * (256 - len(domain)) + domain
+    assert not user.is_valid()

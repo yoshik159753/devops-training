@@ -14,10 +14,12 @@ class User:
                     "name": {
                         "type": "string",
                         "minLength": 1,
+                        "maxLength": 50,
                     },
                     "email": {
                         "type": "string",
                         "minLength": 1,
+                        "maxLength": 255,
                     },
                 },
                 "required": ["name", "email"]
