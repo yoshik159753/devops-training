@@ -56,3 +56,36 @@ def test_email_should_not_be_too_long(user):
     domain = "@example.com"
     user.email = "a" * (256 - len(domain)) + domain
     assert not user.is_valid()
+
+
+@pytest.mark.parametrize(
+    "email", [
+        pytest.param("user@example.com"),
+        pytest.param("USER@foo.COM"),
+        pytest.param("A_US-ER@foo.bar.org"),
+        pytest.param("first.last@foo.jp"),
+        pytest.param("alice+bob@baz.cn"),
+    ]
+)
+def test_email_validation_should_accept_valid_addresses(user, email):
+    """ User の email のフォーマットが妥当な場合は有効であること
+    """
+    user.email = email
+    assert user.is_valid(), f"{email} should be valid"
+
+
+@pytest.mark.parametrize(
+    "email", [
+        pytest.param("user@example,com"),
+        pytest.param("user_at_foo.org"),
+        pytest.param("user.name@example."),
+        pytest.param("foo@bar_baz.com"),
+        pytest.param("foo@bar+baz.com"),
+        pytest.param("foo@bar..com"),
+    ]
+)
+def test_email_validation_should_reject_invalid_addresses(user, email):
+    """ User の email のフォーマットが不正な場合は無効であること
+    """
+    user.email = email
+    assert not user.is_valid(), f"{email} should be invalid"
