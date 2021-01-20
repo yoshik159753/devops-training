@@ -7,9 +7,13 @@ verify_ssl = true
 alembic = "*"
 autopep8 = "*"
 flake8 = "*"
+pytest = "*"
 
 [packages]
 psycopg2 = "*"
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+test = "pytest"
