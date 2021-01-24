@@ -6,6 +6,7 @@ object users {
   email : string
   created_at : datetime
   updated_at : datetime
+  password_digest : string
 }
 
 @enduml
