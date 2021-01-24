@@ -18,7 +18,7 @@ class User:
         email: ユーザーの email です。全ユーザーでユニークとし、小文字で管理します。
     """
 
-    def __init__(self, name, email, **kwargs):
+    def __init__(self, name, email, password=None, password_confirmation=None, **kwargs):
         """コンストラクタです。
 
         引数はデータベースの Users テーブルのカラムとほぼ同様です。
@@ -30,6 +30,9 @@ class User:
         """
         self.name = name
         self.email = email
+
+        self.password = password
+        self.password_confirmation = password_confirmation
 
         self.id = kwargs.get('id', uuid())
         now = dt.datetime.utcnow()
@@ -74,12 +77,23 @@ class User:
                         "pattern": ("^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*"
                                     "@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\\.)+[a-zA-Z]{2,}$"),
                     },
+                    "password": {
+                        "type": "string",
+                        "minLength": 1,
+                    },
+                    "password_confirmation": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": self.password,
+                    },
                 },
-                "required": ["name", "email"]
+                "required": ["name", "email", "password", "password_confirmation"]
             }
             properties = {
                 "name": self.name.strip(),
                 "email": self.email.strip().lower(),
+                "password": self.password,
+                "password_confirmation": self.password_confirmation,
             }
             validate(properties, schema)
         except ValidationError as e:

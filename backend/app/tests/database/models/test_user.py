@@ -13,7 +13,7 @@ def setup_teardown_for_module(migrate):
 def user():
     """ テスト用の User を返します。
     """
-    user = User(name="Example User", email="user@example.com")
+    user = User(name="Example User", email="user@example.com", password="foobar", password_confirmation="foobar")
     return user
 
 
