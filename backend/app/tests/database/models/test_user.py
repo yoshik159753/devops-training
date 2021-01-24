@@ -117,3 +117,27 @@ def test_email_addresses_should_be_saved_as_lowercase(user):
     user.email = mixed_case_email
     user.save()
     assert user.reload().email == mixed_case_email.lower()
+
+
+@pytest.mark.parametrize(
+    "space", [
+        pytest.param(" "),
+        pytest.param("　"),
+    ]
+)
+def test_password_should_be_present_nonblank(user, space):
+    """ User のパスワードが空白の場合は無効であることをテストします。
+    """
+    password = space * 6
+    user.password = password
+    user.password_confirmation = password
+    assert not user.is_valid()
+
+
+def test_password_should_have_a_minimum_length(user):
+    """ User のパスワードが6未満の場合は無効であることをテストします。
+    """
+    password = "a" * 5
+    user.password = password
+    user.password_confirmation = password
+    assert not user.is_valid()

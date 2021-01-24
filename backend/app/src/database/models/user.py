@@ -79,11 +79,11 @@ class User:
                     },
                     "password": {
                         "type": "string",
-                        "minLength": 1,
+                        "minLength": 6,
                     },
                     "password_confirmation": {
                         "type": "string",
-                        "minLength": 1,
+                        "minLength": 6,
                         "pattern": self.password,
                     },
                 },
@@ -92,8 +92,8 @@ class User:
             properties = {
                 "name": self.name.strip(),
                 "email": self.email.strip().lower(),
-                "password": self.password,
-                "password_confirmation": self.password_confirmation,
+                "password": self.password.strip(),
+                "password_confirmation": self.password_confirmation.strip(),
             }
             validate(properties, schema)
         except ValidationError as e:
