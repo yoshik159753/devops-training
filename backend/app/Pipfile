@@ -12,6 +12,7 @@ pytest = "*"
 [packages]
 psycopg2 = "*"
 jsonschema = "*"
+sqlalchemy = "*"
 
 [requires]
 python_version = "3.8"
