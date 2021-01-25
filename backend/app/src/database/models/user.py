@@ -1,4 +1,5 @@
 import datetime as dt
+import hashlib
 from uuid import uuid4 as uuid
 
 from jsonschema import ValidationError, validate
@@ -34,7 +35,7 @@ class User:
         self.password = password
         self.password_confirmation = password_confirmation
 
-        self.id = kwargs.get('id', uuid())
+        self.id = kwargs.get('id', str(uuid()))
         now = dt.datetime.utcnow()
         self.created_at = kwargs.get('created_at', now)
         self.updated_at = kwargs.get('updated_at', now)
@@ -125,11 +126,13 @@ class User:
         if not self.is_valid():
             return False
         now = dt.datetime.utcnow()
+        self.password_digest = hashlib.sha256(self.password.encode()).hexdigest()
         query = self.users.insert().values(id=str(self.id),
                                            name=self.name,
                                            email=self.email.lower(),
                                            created_at=now,
-                                           updated_at=now)
+                                           updated_at=now,
+                                           password_digest=self.password_digest)
         with engine.connect() as conn:
             conn.execute(query)
 
@@ -145,17 +148,55 @@ class User:
             データベースのデータから新たなインスタンスを返します。
             データベースの問い合わせ結果が不正な場合は False を返します。
         """
-        email = self.email.strip().lower()
-        query = select([self.users]).where(self.users.c.email == email)
+        query = select([self.users]).where(self.users.c.id == self.id)
         with engine.connect() as conn:
             result = conn.execute(query)
             if result.rowcount <= 0:
-                params = f"email[{email}]."
+                params = f"ID[{self.id}]."
                 logger.error(f"User not exists. {params}")
                 return False
             if result.rowcount > 1:
-                params = f"email[{email}]."
+                params = f"ID[{self.id}]."
                 logger.error(f"Same user exists. {params}")
                 return False
             row = result.fetchone()
             return User(**dict(row.items()))
+
+    @classmethod
+    def find_by(cls, id=None, email=None):
+        """User テーブルからインスタンスを生成します。
+
+        引数の key, value をもとに User テーブルからユーザーを取得しインスタンスを生成します。
+
+        Args:
+            id: Optional; ID を指定します。
+            email: Optional; Email を指定します。
+
+        Returns:
+            User テーブルからデータを取得した場合はインスタンスを返します。
+            存在しなかった場合は None を返します。
+        """
+        users = Table('users', meta, autoload=True)
+        query = select([users])
+        query = query.where(users.c.id == id) if id is not None else query
+        query = query.where(users.c.email == email.strip().lower()) if email is not None else query
+        with engine.connect() as conn:
+            result = conn.execute(query)
+            row = result.fetchone()
+            if result.rowcount <= 0:
+                return None
+            return User(**dict(row.items()))
+
+    def authenticate(self, password):
+        """登録済みパスワードと一致するか検証します。
+
+        引数のパスワードが登録済みパスワードと一致するか検証します。
+
+        Args:
+            password: パスワードを指定します。
+
+        Returns:
+            一致する場合は True を返します。
+            それ以外の場合は False を返します。
+        """
+        return self.password_digest == hashlib.sha256(password.encode()).hexdigest()

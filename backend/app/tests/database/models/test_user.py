@@ -141,3 +141,51 @@ def test_password_should_have_a_minimum_length(user):
     user.password = password
     user.password_confirmation = password
     assert not user.is_valid()
+
+
+@pytest.mark.parametrize(
+    "key", [
+        pytest.param("id"),
+        pytest.param("email"),
+    ]
+)
+def test_find_by(user, key):
+    """User を取得できることをテストします。
+    """
+    user.save()
+    find_user = User.find_by(**{key: getattr(user, key)})
+    assert getattr(user, key) == getattr(find_user, key)
+
+
+@pytest.mark.parametrize(
+    "key", [
+        pytest.param("id"),
+        pytest.param("email"),
+    ]
+)
+def test_user_not_found(user, key):
+    """User が取得できないことをテストします。
+    """
+    find_user = User.find_by(**{key: getattr(user, key)})
+    assert find_user is None
+
+
+def test_password_match(user):
+    """パスワードが一致した場合は True が返ることをテストします。
+    """
+    user.save()
+    assert user.authenticate(user.password)
+
+
+@pytest.mark.parametrize(
+    "password", [
+        pytest.param("not_the_right_password"),
+        pytest.param("foobaz"),
+        pytest.param("foobar".upper()),
+    ]
+)
+def test_password_unmatch(user, password):
+    """パスワードが不一致の場合は False が返ることをテストします。
+    """
+    user.save()
+    assert not user.authenticate(password)
