@@ -1,0 +1,217 @@
+openapi: 3.0.1
+info:
+  title: Rails tutorail
+  description: Rails tutorail.
+  version: 1.0.0
+servers:
+  - url: https://example.co.jp/api/v1
+tags:
+  - name: users
+    description: User に関する操作を提供します。
+paths:
+  /users:
+    get:
+      tags:
+        - users
+      summary: ユーザーの一覧を取得する
+      description: ユーザーの一覧を取得します。
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/fields'
+      responses:
+        200:
+          description: 正常終了
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+              description: 全件数
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReadUser'
+    post:
+      tags:
+        - users
+      summary: ユーザーを登録する
+      description: ユーザーを登録します。
+      requestBody:
+        description: リクエストボディ
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        200:
+          description: 正常終了
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ユーザー ID
+                    example: 12345678-90ab-cdef-ghij-klnmopqrstuv
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: ユーザーを取得する
+      description: ユーザーを取得します。
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        200:
+          description: 正常終了
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadUser'
+    patch:
+      tags:
+        - users
+      summary: ユーザーを更新する
+      description: ユーザーを更新します。
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      requestBody:
+        description: リクエストボディ
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+      responses:
+        200:
+          description: 正常終了
+    delete:
+      tags:
+        - users
+      summary: ユーザーを削除する
+      description: ユーザーを削除します。
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        200:
+          description: 正常終了
+components:
+  securitySchemes:
+    bearerApiKey:
+      type: http
+      scheme: bearer
+      description: API Key を指定します。
+  parameters:
+    limit:
+      name: limit
+      in: query
+      description: 取得する件数
+      required: false
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+        example: 20
+    offset:
+      name: offset
+      in: query
+      description: オフセット
+      required: false
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+        example: '0'
+    sort:
+      name: sort
+      in: query
+      description: |
+        ソート
+
+        * ソート項目を複数指定する場合はカンマ区切りで指定します。優先度は先頭の項目を高とし順に低くなります
+        * 昇順がデフォルトです。先頭にハイフン(-)を付与することで降順を指定することができます
+      required: false
+      schema:
+        type: string
+        example: id,name,-email
+    fields:
+      name: fields
+      in: query
+      description: |
+        取得項目
+
+        * 取得項目を絞り込む場合はカンマ区切りで指定します
+      required: false
+      schema:
+        type: string
+        example: id,name,email
+    query:
+      name: query
+      in: query
+      description: クエリ
+      required: false
+      schema:
+        type: string
+    userId:
+      name: userId
+      in: path
+      description: ユーザー ID
+      required: true
+      schema:
+        type: string
+        example: 12345678-90ab-cdef-ghij-klnmopqrstuv
+  schemas:
+    CreateUser:
+      type: object
+      properties:
+        name:
+          type: string
+          description: ユーザー名
+          example: username
+        email:
+          type: string
+          description: メールアドレス
+          example: username@example.com
+        password:
+          type: string
+          description: パスワード
+          example: p@ssw0rd
+        password_confirmation:
+          type: string
+          description: パスワード確認
+          example: p@ssw0rd
+      required:
+        - name
+        - email
+        - password
+        - password_confirmation
+    ReadUser:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ユーザー ID
+          example: 12345678-90ab-cdef-ghij-klnmopqrstuv
+        name:
+          type: string
+          description: ユーザー名
+          example: username
+        email:
+          type: string
+          description: メールアドレス
+          example: username@example.com
+    UpdateUser:
+      type: object
+      properties:
+        name:
+          type: string
+          description: ユーザー名
+          example: username
+        email:
+          type: string
+          description: メールアドレス
+          example: username@example.com
