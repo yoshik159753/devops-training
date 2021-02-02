@@ -13,6 +13,8 @@ pytest = "*"
 psycopg2 = "*"
 jsonschema = "*"
 sqlalchemy = "*"
+flask = "*"
+flask-restful = "*"
 
 [requires]
 python_version = "3.8"

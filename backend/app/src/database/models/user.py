@@ -36,7 +36,7 @@ class User:
         self.password_confirmation = password_confirmation
 
         self.id = kwargs.get('id', str(uuid()))
-        now = dt.datetime.utcnow()
+        now = dt.datetime.now(dt.timezone.utc)
         self.created_at = kwargs.get('created_at', now)
         self.updated_at = kwargs.get('updated_at', now)
 
@@ -125,13 +125,12 @@ class User:
         """
         if not self.is_valid():
             return False
-        now = dt.datetime.utcnow()
         self.password_digest = hashlib.sha256(self.password.encode()).hexdigest()
         query = self.users.insert().values(id=str(self.id),
                                            name=self.name,
                                            email=self.email.lower(),
-                                           created_at=now,
-                                           updated_at=now,
+                                           created_at=self.created_at,
+                                           updated_at=self.updated_at,
                                            password_digest=self.password_digest)
         with engine.connect() as conn:
             conn.execute(query)

@@ -6,6 +6,8 @@ import pytest
 from alembic import command
 from alembic.config import Config
 
+from src.app import app
+
 
 @pytest.fixture()
 def migrate():
@@ -15,3 +17,18 @@ def migrate():
     command.upgrade(alembic_cfg, "head")
     yield()
     command.downgrade(alembic_cfg, "base")
+
+
+@pytest.fixture
+def client():
+    return app.test_client()
+
+
+@pytest.fixture()
+def server_url():
+    return '/api'
+
+
+@pytest.fixture()
+def api_version():
+    return '/v1'
