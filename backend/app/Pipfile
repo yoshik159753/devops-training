@@ -16,6 +16,7 @@ sqlalchemy = "*"
 flask = "*"
 flask-restful = "*"
 flask-cors = "*"
+cerberus = "*"
 
 [requires]
 python_version = "3.8"

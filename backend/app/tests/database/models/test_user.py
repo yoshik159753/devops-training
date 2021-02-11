@@ -20,7 +20,8 @@ def user():
 def test_should_be_valid(user):
     """ User が有効であることをテストします。
     """
-    assert user.is_valid()
+    assert user.is_valid() is True
+    assert hasattr(user, "errors") is False
 
 
 @pytest.mark.parametrize(
@@ -34,7 +35,8 @@ def test_name_should_be_present(user, name):
     """ User の name が空文字、空白のみの場合は無効であることをテストします。
     """
     user.name = name
-    assert not user.is_valid()
+    assert user.is_valid() is False
+    assert hasattr(user, "errors") is True
 
 
 @pytest.mark.parametrize(
@@ -48,14 +50,16 @@ def test_email_should_be_present(user, email):
     """ User の email が空文字、空白のみの場合は無効であることをテストします。
     """
     user.email = email
-    assert not user.is_valid()
+    assert user.is_valid() is False
+    assert hasattr(user, "errors") is True
 
 
 def test_name_should_not_be_too_long(user):
     """ User の name が50文字を超過している場合は無効であることをテストします。
     """
     user.name = "a" * 51
-    assert not user.is_valid()
+    assert user.is_valid() is False
+    assert hasattr(user, "errors") is True
 
 
 def test_email_should_not_be_too_long(user):
@@ -63,7 +67,8 @@ def test_email_should_not_be_too_long(user):
     """
     domain = "@example.com"
     user.email = "a" * (256 - len(domain)) + domain
-    assert not user.is_valid()
+    assert user.is_valid() is False
+    assert hasattr(user, "errors") is True
 
 
 @pytest.mark.parametrize(
@@ -79,7 +84,8 @@ def test_email_validation_should_accept_valid_addresses(user, email):
     """ User の email のフォーマットが妥当な場合は有効であることテストします。
     """
     user.email = email
-    assert user.is_valid(), f"{email} should be valid"
+    assert user.is_valid() is True
+    assert hasattr(user, "errors") is False
 
 
 @pytest.mark.parametrize(
@@ -96,7 +102,8 @@ def test_email_validation_should_reject_invalid_addresses(user, email):
     """ User の email のフォーマットが不正な場合は無効であることテストします。
     """
     user.email = email
-    assert not user.is_valid(), f"{email} should be invalid"
+    assert user.is_valid() is False
+    assert hasattr(user, "errors") is True
 
 
 def test_email_addresses_should_be_unique(user):
@@ -107,7 +114,8 @@ def test_email_addresses_should_be_unique(user):
     # email の性質として大文字小文字を区別しない観点をあわせてチェックする
     duplicate_user.email = duplicate_user.email.upper()
     user.save()
-    assert not duplicate_user.is_valid()
+    assert duplicate_user.is_valid() is False
+    assert hasattr(duplicate_user, "errors") is True
 
 
 def test_email_addresses_should_be_saved_as_lowercase(user):
@@ -131,7 +139,8 @@ def test_password_should_be_present_nonblank(user, space):
     password = space * 6
     user.password = password
     user.password_confirmation = password
-    assert not user.is_valid()
+    assert user.is_valid() is False
+    assert hasattr(user, "errors") is True
 
 
 def test_password_should_have_a_minimum_length(user):
@@ -140,7 +149,8 @@ def test_password_should_have_a_minimum_length(user):
     password = "a" * 5
     user.password = password
     user.password_confirmation = password
-    assert not user.is_valid()
+    assert user.is_valid() is False
+    assert hasattr(user, "errors") is True
 
 
 @pytest.mark.parametrize(

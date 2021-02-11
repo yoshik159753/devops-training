@@ -2,9 +2,9 @@ import datetime as dt
 import hashlib
 from uuid import uuid4 as uuid
 
-from jsonschema import ValidationError, validate
 from sqlalchemy import Table, select
 from src.core.logging import logger
+from src.core.validation import validate
 from src.database.db import engine, meta
 
 
@@ -45,60 +45,67 @@ class User:
     def is_valid(self):
         """有効性を検証します。
 
-        属性の値がモデルとして有効か検証します。有効な場合は True を返し、無効な場合は False を返します。
-        有効性として次の内容を検証します。
+        属性の値がモデルとして有効か検証します。有効な場合は True を返し、無効な場合は False を返し、インスタンス変数
+        errors にエラー内容をセットします。有効性として次の内容を検証します。
 
         * 必須
         * 文字列長
         * メールのフォーマット
-        * ユーザーの一意性
+        * ユーザーの一意性 など
 
         Args:
             None
 
         Returns:
             属性の値がユーザーして有効な場合は True を返します。
-            無効な場合は False を返します。
+            それ以外の場合は False を返し、インスタンス変数 errors にエラー内容をセットします。
+            errors の内容は次のフォーマットの通りです。
+            例:
+
+                [
+                    {"key": "key", "message": "message"},
+                    {"key": "name", "message": "不正です。"},
+                    {"key": "address", "message": "address が不正です。"},
+                ]
         """
-        try:
-            schema = {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 50,
-                    },
-                    "email": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 255,
-                        # jsonschema の正規表現は javascript の構文で解析される
-                        # ref. https://www.javadrive.jp/regex-basic/sample/index13.html
-                        "pattern": ("^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*"
-                                    "@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\\.)+[a-zA-Z]{2,}$"),
-                    },
-                    "password": {
-                        "type": "string",
-                        "minLength": 6,
-                    },
-                    "password_confirmation": {
-                        "type": "string",
-                        "minLength": 6,
-                        "pattern": self.password,
-                    },
-                },
-                "required": ["name", "email", "password", "password_confirmation"]
-            }
-            properties = {
-                "name": self.name.strip(),
-                "email": self.email.strip().lower(),
-                "password": self.password.strip(),
-                "password_confirmation": self.password_confirmation.strip(),
-            }
-            validate(properties, schema)
-        except ValidationError as e:
-            logger.debug(f"{e.message}")
+        schema = {
+            "name": {
+                "required": True,
+                "type": "string",
+                "minlength": 1,
+                "maxlength": 50,
+            },
+            "email": {
+                "required": True,
+                "type": "string",
+                "minlength": 1,
+                "maxlength": 255,
+                # jsonschema の正規表現は javascript の構文で解析される
+                # ref. https://www.javadrive.jp/regex-basic/sample/index13.html
+                "regex": ("^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*"
+                          "@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\\.)+[a-zA-Z]{2,}$"),
+            },
+            "password": {
+                "required": True,
+                "type": "string",
+                "minlength": 6,
+                "dependencies": {
+                    "password_confirmation": [self.password]
+                }
+            },
+            "password_confirmation": {},
+        }
+        name = self.name.strip() if self.name is not None else ""
+        email = self.email.strip().lower() if self.email is not None else ""
+        password = self.password.strip() if self.password is not None else ""
+        password_confirmation = self.password_confirmation.strip() if self.password_confirmation is not None else ""
+        properties = {"name": name,
+                      "email": email,
+                      "password": password,
+                      "password_confirmation": password_confirmation}
+        result, errors = validate(properties, schema)
+        if result is False:
+            self.errors = errors
             return False
 
         query = select([self.users]).where(self.users.c.email == self.email.strip().lower())
@@ -106,7 +113,7 @@ class User:
             result = conn.execute(query)
             if result.rowcount >= 1:
                 params = f"email[{self.email}]."
-                logger.debug(f"Email is already exists. {params}")
+                self.errors = [{"key": "email", "message": f"Email is already exists. {params}"}]
                 return False
 
         return True
