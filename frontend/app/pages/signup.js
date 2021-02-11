@@ -1,6 +1,7 @@
 import Layout from "../components/layout";
 import { createUser } from "../actions";
 import { useState } from "react";
+import ErrorMessages from "../components/errorMessages";
 
 const Signup = () => {
   const defaultFormData = {
@@ -11,6 +12,7 @@ const Signup = () => {
   };
 
   const [form, setForm] = useState(defaultFormData);
+  const [errorMessages, setEerrorMessages] = useState([]);
 
   const handleChange = (event) => {
     const target = event.target;
@@ -22,9 +24,16 @@ const Signup = () => {
   };
 
   const submitForm = () => {
-    createUser({ ...form }).then((res) => {
-      console.log(res);
-    });
+    createUser({ ...form })
+      .then((res) => {
+        console.log(res.response.data.errors);
+        const errors = res.response.data.errors;
+        const messages = errors.map((error) => error["message"]);
+        setEerrorMessages(messages);
+      })
+      .catch((res) => {
+        console.log(res);
+      });
   };
 
   return (
@@ -32,6 +41,8 @@ const Signup = () => {
       <h1>Sign up</h1>
 
       <form>
+        <ErrorMessages messages={errorMessages} />
+
         <div className="form-group">
           <label htmlFor="name">Name</label>
           <input
