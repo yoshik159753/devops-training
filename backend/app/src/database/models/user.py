@@ -2,7 +2,7 @@ import datetime as dt
 import hashlib
 from uuid import uuid4 as uuid
 
-from sqlalchemy import Table, select
+from sqlalchemy import Table, func, select
 from src.core.logging import logger
 from src.core.validation import validate
 from src.database.db import engine, meta
@@ -206,3 +206,19 @@ class User:
             それ以外の場合は False を返します。
         """
         return self.password_digest == hashlib.sha256(password.encode()).hexdigest()
+
+    @classmethod
+    def count(cls):
+        """User テーブルのレコード数を返します。
+
+        Args:
+            None
+
+        Returns:
+            User テーブルのレコード数を返します。
+        """
+        users = Table('users', meta, autoload=True)
+        stmt = select([func.count()]).select_from(users)
+        with engine.connect() as conn:
+            count = conn.execute(stmt).scalar()
+            return count

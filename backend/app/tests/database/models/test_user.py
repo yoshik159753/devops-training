@@ -199,3 +199,22 @@ def test_password_unmatch(user, password):
     """
     user.save()
     assert not user.authenticate(password)
+
+
+@pytest.mark.parametrize(
+    "max", [
+        pytest.param(0),
+        pytest.param(1),
+        pytest.param(3),
+    ]
+)
+def test_count(max):
+    """登録数分の件数が返ることをテストします。
+    """
+    for index in range(max):
+        user = User(name=f"Example User{index}",
+                    email=f"user{index}@example.com",
+                    password="foobar",
+                    password_confirmation="foobar")
+        user.save()
+    assert User.count() == max

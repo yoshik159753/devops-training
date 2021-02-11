@@ -1,6 +1,7 @@
 import re
 
 import pytest
+from src.database.models.user import User
 
 
 @pytest.fixture(scope='function', autouse=True)
@@ -31,6 +32,8 @@ def test_ok(client, server_url, api_version):
 def test_badrequest(client, server_url, api_version):
     """エラー
     """
+    before_user_count = User.count()
+
     url = f"{server_url}{api_version}/users"
     request_body = {"email": "username@example",
                     "password": "123",
@@ -47,3 +50,5 @@ def test_badrequest(client, server_url, api_version):
     for error in response_body.get("errors"):
         assert "message" in error.keys()
         assert type(error.get("message")) is str
+
+    assert before_user_count == User.count()
