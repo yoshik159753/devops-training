@@ -57,6 +57,26 @@ paths:
                     type: string
                     description: ユーザー ID
                     example: 12345678-90ab-cdef-ghij-klnmopqrstuv
+        400:
+          description: 不正リクエスト
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: string
+                    description: 概要
+                    example: 不正なリクエスト
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          description: エラーメッセージ
+                          example: name の値が不正
   /users/{userId}:
     get:
       tags:
