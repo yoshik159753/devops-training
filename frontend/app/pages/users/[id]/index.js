@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import Layout from "../../../components/layout";
-import getUserById from "../../../actions";
+import { getUserById } from "../../../actions";
 
 const User = (props) => {
   const user = props.user;

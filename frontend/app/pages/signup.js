@@ -2,13 +2,16 @@ import Layout from "../components/layout";
 import { createUser } from "../actions";
 import { useState } from "react";
 import ErrorMessages from "../components/errorMessages";
+import { useRouter } from "next/router";
 
 const Signup = () => {
+  const router = useRouter();
+
   const defaultFormData = {
     name: "",
     email: "",
     password: "",
-    passwordConfirmation: "",
+    password_confirmation: "",
   };
 
   const [form, setForm] = useState(defaultFormData);
@@ -25,14 +28,13 @@ const Signup = () => {
 
   const submitForm = () => {
     createUser({ ...form })
-      .then((res) => {
-        console.log(res.response.data.errors);
-        const errors = res.response.data.errors;
+      .then(({ id }) => {
+        router.push(`/users/${id}`);
+      })
+      .catch(({ response }) => {
+        const errors = response.data.errors;
         const messages = errors.map((error) => error["message"]);
         setEerrorMessages(messages);
-      })
-      .catch((res) => {
-        console.log(res);
       });
   };
 
@@ -81,7 +83,7 @@ const Signup = () => {
           <input
             onChange={handleChange}
             value={form.passwordConfirmation}
-            name="passwordConfirmation"
+            name="password_confirmation"
             type="password"
             className="form-control"
             id="passwordConfirmation"
