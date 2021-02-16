@@ -29,7 +29,7 @@ const Signup = () => {
   const submitForm = () => {
     createUser({ ...form })
       .then(({ id }) => {
-        router.push(`/users/${id}`);
+        router.push({ pathname: `/users/${id}`, query: { welcome: true } });
       })
       .catch(({ response }) => {
         const errors = response.data.errors;
