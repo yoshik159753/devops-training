@@ -14,6 +14,8 @@ def setup_teardown_for_module(migrate):
 def test_ok(client, server_url, api_version):
     """正常終了
     """
+    before_user_count = User.count()
+
     url = f"{server_url}{api_version}/users"
     request_body = {"name": "username",
                     "email": "username@example.com",
@@ -27,6 +29,8 @@ def test_ok(client, server_url, api_version):
     assert "id" in response_body.keys()
     uuid_pattern = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
     assert re.fullmatch(uuid_pattern, response_body.get("id")) is not None
+
+    assert before_user_count + 1 == User.count()
 
 
 def test_badrequest(client, server_url, api_version):
