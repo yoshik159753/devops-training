@@ -7,8 +7,13 @@ servers:
   - url: https://example.co.jp/api/v1
 tags:
   - name: users
-    description: User に関する操作を提供します。
+    description: ユーザーに関する操作を提供します。
+  - name: login
+    description: ログインやログイアウトに関する操作を提供します。
 paths:
+  # ##########
+  # Tag: users
+  # ##########
   /users:
     get:
       tags:
@@ -118,6 +123,29 @@ paths:
       responses:
         200:
           description: 正常終了
+
+  # ##########
+  # Tag: login
+  # ##########
+  /login:
+    post:
+      tags:
+        - login
+      summary: 新しいセッションを作成する
+      description: 新しいセッションを作成します。
+      responses:
+        200:
+          description: 正常終了
+  /logout:
+    delete:
+      tags:
+        - login
+      summary: セッションを削除する
+      description: セッションを削除します。
+      responses:
+        200:
+          description: 正常終了
+
 components:
   securitySchemes:
     bearerApiKey:
